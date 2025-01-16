@@ -88,22 +88,19 @@ class PersonalAccessTokenTest extends TestCase
     #[Test]
     public function can_ping_api_with_personal_access_token(): void
     {
-        /** @var \Laravel\Passport\PersonalAccessTokenResult $token */
-        $token = $this->makeUser()->createToken($this->personalAccessClient->name, ['sample-scope']);
-
-        $accessToken = $token->accessToken;
-
-        $response = $this
-            ->withToken($accessToken)
-            ->getJson('/api/ping')
-            ->assertSeeText('pong');
-
-        // Do it another way
-
         $this->makeUserAndAuthenticateWithToken();
 
         $response = $this
             ->getJson('/api/ping')
             ->assertSeeText('pong');
+    }
+
+    #[Test]
+    public function cannot_ping_api_without_personal_access_token(): void
+    {
+        $response = $this
+            ->getJson('/api/ping')
+            ->assertStatus(401)
+            ->assertDontSeeText('pong');
     }
 }
