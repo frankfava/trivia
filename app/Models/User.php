@@ -46,4 +46,31 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    /** Scope to get users with active games */
+    public function scopeActiveGames($query)
+    {
+        return $query->whereHas('games', function ($query) {
+            $query->where('status', 'active');
+        });
+    }
+
+    /** Games this user is on (Pivot) */
+    public function games()
+    {
+        return $this->belongsToMany(Game::class, (new GameUser)->getTable())
+            ->using(GameUser::class);
+    }
+
+    /** Games this user created */
+    public function createdGames()
+    {
+        return $this->hasMany(Game::class, 'created_by_id');
+    }
+
+    /** Questions this user answered */
+    public function answeredQuestions()
+    {
+        return $this->hasMany(GameQuestion::class, 'answered_by_id');
+    }
 }
