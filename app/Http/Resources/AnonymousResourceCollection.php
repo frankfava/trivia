@@ -30,4 +30,11 @@ class AnonymousResourceCollection extends BaseResourceCollection
             return $this->collects::make($item)->resource->toArray($request);
         })->all();
     }
+
+    public function toArray($request = null)
+    {
+        $data = ['data' => $this->data($request)];
+
+        return $data;
+    }
 }

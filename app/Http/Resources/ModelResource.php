@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
@@ -20,6 +21,8 @@ class ModelResource extends JsonResource
             return $collection;
         }
 
+        static::withoutWrapping();
+
         return static::make($resource);
     }
 
@@ -30,5 +33,10 @@ class ModelResource extends JsonResource
                 $collection->preserveKeys = (new static([]))->preserveKeys === true;
             }
         });
+    }
+
+    public function toArray(Request $request)
+    {
+        return parent::toArray($request);
     }
 }
