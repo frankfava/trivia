@@ -4,9 +4,9 @@ use App\Http\Controllers\Api;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/ping', fn () => 'pong');
+Route::get('/ping', fn () => 'pong')->name('ping');
 
-Route::get('/user', fn (Request $request) => $request->user());
+Route::get('/user', fn (Request $request) => $request->user())->name('user');
 
 // Manage Games
 Route::apiResource('games', Api\GameController::class);
@@ -24,7 +24,7 @@ Route::post('games/{game}/join', [Api\GameJoinController::class, 'store'])->name
 Route::apiResource('questions', Api\QuestionController::class)->only(['store', 'destroy']);
 
 // Managing Categories
-Route::apiResource('categories', Api\CategoryController::class)->only(['index', 'show', 'destroy']);
+Route::apiResource('categories', Api\CategoryController::class)->only(['index', 'show', 'destroy'])->names('categories');
 
 // Get Questions on a Game
 Route::post('games/{game}/questions', [Api\GameQuestionController::class, 'index'])->name('games.questions.index');
