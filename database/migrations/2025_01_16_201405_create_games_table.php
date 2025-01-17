@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('status')->default('pending');
             $table->foreignId('created_by_id')->constrained('users')->onDelete('cascade');
+            $table->json('meta')->nullable();
             $table->timestamps();
         });
     }

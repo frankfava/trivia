@@ -15,12 +15,38 @@ class GameQuestion extends Model
         'question_id',
         'answered_by_id',
         'answer',
+        'is_correct',
         'answered_at',
+        'locked_at',
     ];
 
-    protected $dates = [
-        'answered_at',
+    protected $casts = [
+        'game_id' => 'integer',
+        'question_id' => 'integer',
+        'answered_by_id' => 'integer',
+        'answer' => 'string',
+        'is_correct' => 'boolean',
+        'answered_at' => 'datetime',
+        'locked_at' => 'datetime',
     ];
+
+    /**
+     * Scope to filter unlocked questions or questions with stale locks.
+     */
+    public function scopeIsUnlocked($query)
+    {
+        $query->where(function ($query) {
+            $query->whereNull('locked_at');
+        });
+    }
+
+    /**
+     * Determine if the question is stale-locked.
+     */
+    public function isStaleLocked(): bool
+    {
+        return $this->locked_at;
+    }
 
     /** Scope a query to only include answered questions. */
     public function scopeAnswered($query)

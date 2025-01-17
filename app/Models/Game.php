@@ -14,10 +14,13 @@ class Game extends Model
     protected $fillable = [
         'status',
         'created_by_id',
+        'meta',
     ];
 
     protected $casts = [
         'status' => GameStatus::class,
+        'created_by_id' => 'integer',
+        'meta' => 'json',
     ];
 
     /** Scope to get games by status */

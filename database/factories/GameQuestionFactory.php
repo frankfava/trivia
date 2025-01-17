@@ -27,7 +27,9 @@ class GameQuestionFactory extends Factory
             'question_id' => Question::factory(),
             'answered_by_id' => User::factory(),
             'answer' => $this->faker->words(2, true), // Answered or not
+            'is_correct' => null,
             'answered_at' => $this->faker->optional()->dateTime,
+            'locked_at' => null,
         ];
     }
 }

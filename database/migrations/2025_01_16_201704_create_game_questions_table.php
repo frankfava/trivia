@@ -17,7 +17,9 @@ return new class extends Migration
             $table->foreignId('question_id')->constrained()->onDelete('cascade');
             $table->foreignId('answered_by_id')->nullable()->constrained(table: 'users')->onDelete('cascade');
             $table->text('answer')->nullable();
+            $table->boolean('is_correct')->nullable();
             $table->timestamp('answered_at')->nullable();
+            $table->timestamp('locked_at')->nullable();
             $table->timestamps();
         });
     }

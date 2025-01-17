@@ -14,8 +14,8 @@ class Question extends Model
 
     protected $fillable = [
         'type',
-        'question',
         'difficulty',
+        'question',
         'category_id',
         'correct_answer',
         'incorrect_answers',
@@ -24,7 +24,11 @@ class Question extends Model
     protected $casts = [
         'type' => QuestionType::class,
         'difficulty' => QuestionDifficulty::class,
+        'category_id' => 'integer',
+        'question' => 'string',
+        'correct_answer' => 'string',
         'incorrect_answers' => 'json',
+        'content_hash' => 'string',
     ];
 
     protected $hidden = [
