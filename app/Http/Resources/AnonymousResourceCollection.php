@@ -33,8 +33,6 @@ class AnonymousResourceCollection extends BaseResourceCollection
 
     public function toArray($request = null)
     {
-        $data = ['data' => $this->data($request)];
-
-        return $data;
+        return $this->data($request);
     }
 }

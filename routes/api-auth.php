@@ -21,7 +21,7 @@ Route::match(['put', 'patch'], 'games/{game}/resume', [Api\GameStatusController:
 Route::delete('games/{game}/cancel', [Api\GameStatusController::class, 'cancel'])->name('games.cancel');
 
 // Add User to Game
-Route::match(['put', 'patch'], 'games/{game}/join', [Api\GameJoinController::class, 'update'])->name('games.join');
+Route::match(['put', 'patch'], 'games/{game}/join', [Api\GameJoinController::class, 'join'])->name('games.join');
 
 // Manage Questions
 Route::apiResource('questions', Api\QuestionController::class)->only(['store', 'destroy'])->names('questions');
