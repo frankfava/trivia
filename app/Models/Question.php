@@ -35,6 +35,21 @@ class Question extends Model
         'content_hash',
     ];
 
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function (self $question) {
+            if (empty($question->content_hash)) {
+                $contentHash = substr(md5(json_encode($question->toArray())), 0, 12);
+                $question->content_hash = $contentHash;
+            }
+            if (empty($question->difficulty)) {
+                $question->difficulty = QuestionDifficulty::MEDIUM->value;
+            }
+        });
+    }
+
     /** Scope to get questions by type */
     public function scopeByType($query, QuestionType $type)
     {
@@ -63,5 +78,11 @@ class Question extends Model
     public function gameQuestions()
     {
         return $this->hasMany(GameQuestion::class);
+    }
+
+    /** Games this question is used on */
+    public function games()
+    {
+        return $this->hasManyThrough(Game::class, GameQuestion::class, 'question_id', 'id', 'id', 'game_id');
     }
 }
