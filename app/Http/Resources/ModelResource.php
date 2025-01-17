@@ -2,7 +2,6 @@
 
 namespace App\Http\Resources;
 
-use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
@@ -13,19 +12,23 @@ use Illuminate\Support\Collection;
  */
 class ModelResource extends JsonResource
 {
-    public static function create($resource, ...$args)
+    public static function create($resource)
     {
         if ($resource instanceof LengthAwarePaginator || $resource instanceof Collection) {
-            $collection = CollectionResource::make($resource, get_called_class(), ...$args);
+            $collection = self::collection($resource);
 
             return $collection;
         }
 
-        return static::make($resource, ...$args);
+        return static::make($resource);
     }
 
-    public function toArray(Request $request)
+    public static function collection($resource)
     {
-        return parent::toArray($request);
+        return tap(new AnonymousResourceCollection($resource, get_called_class()), function ($collection) {
+            if (property_exists(static::class, 'preserveKeys')) {
+                $collection->preserveKeys = (new static([]))->preserveKeys === true;
+            }
+        });
     }
 }
