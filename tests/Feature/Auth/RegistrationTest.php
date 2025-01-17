@@ -16,7 +16,7 @@ class RegistrationTest extends TestCase
     #[Test]
     public function can_register_user()
     {
-        $response = $this->postJson(route('register.post'), [
+        $response = $this->postJson(route('register'), [
             'name' => 'John Doe',
             'email' => 'johndoe@example.com',
             'password' => 'password123',
@@ -34,7 +34,7 @@ class RegistrationTest extends TestCase
     #[Test]
     public function cannot_register_user_with_missing_fields()
     {
-        $response = $this->postJson('/api/register', [
+        $response = $this->postJson(route('register'), [
             'email' => 'johndoe@example.com',
             'password' => 'password123',
         ]);

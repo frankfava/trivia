@@ -19,7 +19,7 @@ class AuthenticationTest extends TestCase
     {
         $user = User::factory()->create();
 
-        $response = $this->postJson(route('login.post'), [
+        $response = $this->postJson(route('login'), [
             'email' => $user->email,
             'password' => 'password',
         ]);
@@ -31,7 +31,7 @@ class AuthenticationTest extends TestCase
     #[Test]
     public function login_with_invalid_credentials()
     {
-        $response = $this->postJson(route('login.post'), [
+        $response = $this->postJson(route('login'), [
             'email' => 'nonexistent@example.com',
             'password' => 'wrongpassword',
         ])->assertStatus(422);
