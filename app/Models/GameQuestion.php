@@ -28,6 +28,7 @@ class GameQuestion extends Model
         'is_correct' => 'boolean',
         'answered_at' => 'datetime',
         'locked_at' => 'datetime',
+        'locked_by' => 'integer',
     ];
 
     /**

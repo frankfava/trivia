@@ -20,6 +20,7 @@ return new class extends Migration
             $table->boolean('is_correct')->nullable();
             $table->timestamp('answered_at')->nullable();
             $table->timestamp('locked_at')->nullable();
+            $table->foreignId('locked_by')->nullable()->constrained(table: 'users')->onDelete('cascade');
             $table->timestamps();
         });
     }

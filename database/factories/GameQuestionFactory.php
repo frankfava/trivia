@@ -30,6 +30,7 @@ class GameQuestionFactory extends Factory
             'is_correct' => null,
             'answered_at' => $this->faker->optional()->dateTime,
             'locked_at' => null,
+            'locked_by' => null,
         ];
     }
 }
