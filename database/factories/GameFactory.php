@@ -22,6 +22,7 @@ class GameFactory extends Factory
     public function definition(): array
     {
         return [
+            'label' => $this->words(2, true),
             'status' => $this->faker->randomElement(GameStatus::cases())->value,
             'created_by_id' => User::factory(), // Creates a user if not provided
             'meta' => [

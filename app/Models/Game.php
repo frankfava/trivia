@@ -12,6 +12,7 @@ class Game extends Model
     use HasFactory;
 
     protected $fillable = [
+        'label',
         'status',
         'created_by_id',
         'meta',
