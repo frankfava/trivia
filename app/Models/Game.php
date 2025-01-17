@@ -37,7 +37,7 @@ class Game extends Model
     }
 
     /** User that created this game */
-    public function creator()
+    public function owner()
     {
         return $this->belongsTo(User::class, 'created_by_id');
     }
@@ -50,8 +50,14 @@ class Game extends Model
     }
 
     /** Questions on this Game */
-    public function questions()
+    public function gameQuestions()
     {
         return $this->hasMany(GameQuestion::class);
+    }
+
+    /** Questions on this Game */
+    public function questions()
+    {
+        return $this->hasManyThrough(Question::class, GameQuestion::class, 'game_id', 'id', 'id', 'question_id');
     }
 }

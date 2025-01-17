@@ -9,25 +9,28 @@ Route::get('/ping', fn () => 'pong')->name('ping');
 Route::get('/user', fn (Request $request) => $request->user())->name('user');
 
 // Manage Games
-Route::apiResource('games', Api\GameController::class);
+Route::apiResource('games', Api\GameController::class)->names('games');
 
-// Change Game Status
-Route::post('games/{game}/start', [Api\GameStatusController::class, 'store'])->name('games.start');
+// Start a Game
+Route::match(['put', 'patch'], 'games/{game}/start', [Api\GameStatusController::class, 'start'])->name('games.start');
+
+// Resume a Cancelled Game
+Route::match(['put', 'patch'], 'games/{game}/resume', [Api\GameStatusController::class, 'resume'])->name('games.resume');
 
 // Cancel the Game
-Route::post('games/{game}/cancel', [Api\GameStatusController::class, 'destory'])->name('games.end');
+Route::delete('games/{game}/cancel', [Api\GameStatusController::class, 'cancel'])->name('games.cancel');
 
 // Add User to Game
-Route::post('games/{game}/join', [Api\GameJoinController::class, 'store'])->name('games.join');
+Route::match(['put', 'patch'], 'games/{game}/join', [Api\GameJoinController::class, 'update'])->name('games.join');
 
 // Manage Questions
-Route::apiResource('questions', Api\QuestionController::class)->only(['store', 'destroy']);
+Route::apiResource('questions', Api\QuestionController::class)->only(['store', 'destroy'])->names('questions');
 
 // Managing Categories
 Route::apiResource('categories', Api\CategoryController::class)->only(['index', 'show', 'destroy'])->names('categories');
 
 // Get Questions on a Game
-Route::post('games/{game}/questions', [Api\GameQuestionController::class, 'index'])->name('games.questions.index');
+Route::get('games/{game}/questions', [Api\GameQuestionController::class, 'index'])->name('games.questions.index');
 
 // Get the Next Question
 Route::get('games/{game}/questions/next', [Api\NextQuestionController::class, 'show'])->name('games.questions.next');

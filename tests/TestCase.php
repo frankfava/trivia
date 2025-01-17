@@ -57,7 +57,7 @@ abstract class TestCase extends BaseTestCase
             unset($args['guard']);
         }
         $user = $this->makeUser(...$args);
-        $this->actingAs($user, $guard ?? 'web');
+        $this->actingAs($user, $guard ?? 'api');
 
         return $user;
     }
@@ -69,7 +69,7 @@ abstract class TestCase extends BaseTestCase
      */
     protected function authenticateUserWithToken(User $user, $scopes = [])
     {
-        if (!$this->personalAccessClient) {
+        if (! $this->personalAccessClient) {
             $this->createPersonalAccessClient();
         }
 
