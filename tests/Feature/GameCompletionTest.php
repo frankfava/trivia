@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Http;
+namespace Tests\Feature;
 
 use App\Enums\GameStatus;
 use App\Events\GameCompleted;

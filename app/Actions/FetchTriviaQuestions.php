@@ -35,8 +35,8 @@ class FetchTriviaQuestions
         while ($fetchedQuestions < $this->totalQuestions) {
             $response = Http::get(self::API_URL, array_filter([
                 'amount' => $this->questionsPerBatch,
-                'difficulty' => $this->difficulty->value,
-                'type' => $this->type->value,
+                'difficulty' => $this->difficulty ? $this->difficulty->value : null,
+                'type' => $this->type ? $this->type->value : null,
             ]));
             $json = $response->json();
 

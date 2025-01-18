@@ -18,35 +18,31 @@ class FetchTriviaQuestionsCommand extends Command
 
     public function handle()
     {
-        try {
-            $totalQuestions = $this->option('total');
-            $difficulty = $this->option('difficulty');
-            $type = $this->option('type');
-            $questionsPerBatch = $this->option('batch');
+        $totalQuestions = $this->option('total');
+        $difficulty = $this->option('difficulty');
+        $type = $this->option('type');
+        $questionsPerBatch = $this->option('batch');
 
-            // Validate that questionsPerBatch is not greater than 50
-            if ($questionsPerBatch > 50) {
-                throw new Exception('The number of questions per batch cannot exceed 50.');
-            }
-
-            $this->info("Fetching $totalQuestions trivia questions...");
-
-            $fetchTriviaQuestionsAction = new FetchTriviaQuestions(
-                totalQuestions: $totalQuestions,
-                difficulty: $difficulty,
-                type: $type,
-                questionsPerBatch: $questionsPerBatch,
-                afterEachTry: function ($aggregateCount, $fetchedCount) {
-                    $this->line("Fetched $fetchedCount questions. Total: $aggregateCount");
-                },
-                onCompletion: fn ($fetchedCount) => $this->info("Fetched $fetchedCount questions.")
-            );
-
-            $fetchedCount = $fetchTriviaQuestionsAction->execute();
-
-            $this->info('Successfully fetched trivia questions.');
-        } catch (Exception $e) {
-            $this->error('Error: '.$e->getMessage());
+        // Validate that questionsPerBatch is not greater than 50
+        if ($questionsPerBatch > 50) {
+            throw new Exception('The number of questions per batch cannot exceed 50.');
         }
+
+        $this->info("Fetching $totalQuestions trivia questions...");
+
+        $fetchTriviaQuestionsAction = new FetchTriviaQuestions(
+            totalQuestions: $totalQuestions,
+            difficulty: $difficulty,
+            type: $type,
+            questionsPerBatch: $questionsPerBatch,
+            afterEachTry: function ($aggregateCount, $fetchedCount) {
+                $this->line("Fetched $fetchedCount questions. Total: $aggregateCount");
+            },
+            onCompletion: fn ($fetchedCount) => $this->info("Fetched $fetchedCount questions.")
+        );
+
+        $fetchedCount = $fetchTriviaQuestionsAction->execute();
+
+        $this->info('Successfully fetched trivia questions.');
     }
 }

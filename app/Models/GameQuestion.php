@@ -82,7 +82,7 @@ class GameQuestion extends Model
             return false;
         }
 
-        $this->update([
+        $this->updateQuietly([
             'last_fetched_at' => $datetime ??= Carbon::now(),
             'last_fetched_by' => $userId,
         ]);

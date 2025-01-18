@@ -76,11 +76,9 @@ class NextGameQuestionTest extends TestCase
 
         $game->users()->attach($user);
 
-        $game->gameQuestions()->save(
-            $gameQuestion->lockForUser(
-                user : User::factory()->create(),
-                datetime: now()->subMinutes(6)
-            )
+        $gameQuestion->lockForUser(
+            user : User::factory()->create(),
+            datetime: now()->subMinutes(6)
         );
 
         $this->getJson(route('games.questions.next', [$game]))
