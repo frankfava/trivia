@@ -42,7 +42,7 @@ class QuestionRequest extends FormRequest
             'category_id' => ['required_without:category', 'exists:categories,id'],
             'question' => ['required', 'string', 'max:500'],
             'correct_answer' => ['nullable', 'string', 'max:255'],
-            'incorrect_answers' => ['nullable', 'array'],
+            'incorrect_answers' => ['nullable', 'array', 'min:1'],
             'incorrect_answers.*' => ['string', 'max:255'],
         ];
     }

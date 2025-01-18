@@ -27,7 +27,7 @@ class GameFactory extends Factory
             'created_by_id' => User::factory(), // Creates a user if not provided
             'meta' => [
                 'max_players' => $this->faker->numberBetween(1, 10),
-                'reveal_correct_answers' => $this->faker->boolean(),
+                'show_correct_answers' => $this->faker->boolean(),
             ],
         ];
     }

@@ -30,7 +30,7 @@ class QuestionSubmissionResource extends ModelResource
         return [
             ...$question->toArray(),
             'submitted_answer' => $this->answer,
-            $this->mergeWhen($game->meta['reveal_correct_answers'] ?? false, [
+            $this->mergeWhen($game->meta['show_correct_answers'] ?? false, [
                 'correct_answer' => $question->correct_answer,
             ]),
             'answered_at' => $this->answered_at,

@@ -23,7 +23,7 @@ class GameQuestionSubmissionTest extends TestCase
         $gameQuestion = GameQuestion::factory()
             ->for($game = Game::factory()->create([
                 'status' => GameStatus::IN_PROGRESS->value,
-                'meta' => ['reveal_correct_answers' => true],
+                'meta' => ['show_correct_answers' => true],
             ]))
             ->for($question = Question::factory()->create())
             ->create();
