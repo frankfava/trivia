@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -17,7 +18,7 @@ class GameQuestion extends Model
         'answer',
         'is_correct',
         'answered_at',
-        'locked_at',
+        'last_fetched_at',
     ];
 
     protected $casts = [
@@ -25,28 +26,58 @@ class GameQuestion extends Model
         'question_id' => 'integer',
         'answered_by_id' => 'integer',
         'answer' => 'string',
-        'is_correct' => 'boolean',
         'answered_at' => 'datetime',
-        'locked_at' => 'datetime',
-        'locked_by' => 'integer',
+        'is_correct' => 'boolean',
+        'last_fetched_at' => 'datetime',
+        'last_fetched_by' => 'integer',
     ];
 
-    /**
-     * Scope to filter unlocked questions or questions with stale locks.
-     */
-    public function scopeIsUnlocked($query)
+    /** Determine if the question can be answers */
+    public function canAnswerQuestion(): bool
     {
-        $query->where(function ($query) {
-            $query->whereNull('locked_at');
-        });
+        return ! $this->last_fetched_by && $this->isStaleLocked();
     }
 
-    /**
-     * Determine if the question is stale-locked.
-     */
+    /** Determine if the question is stale-locked. */
     public function isStaleLocked(): bool
     {
-        return $this->locked_at;
+        return $this->last_fetched_at && $this->last_fetched_at->lt(Carbon::now()->subMinutes(5));
+    }
+
+    /** Mark a question as locked by a user.  */
+    public function lockForUser(null|int|User $user): bool
+    {
+        $user ??= (auth()->check() ? auth()->user() : null);
+        $userId = $user instanceof Game ? $user->id : $user;
+
+        if (! $this->canAnswerQuestion()) {
+            return false;
+        }
+
+        $this->update([
+            'last_fetched_at' => Carbon::now(),
+            'last_fetched_by' => $userId,
+        ]);
+
+        return true;
+    }
+
+    // ========== Scopes
+
+    /** Scope to get Questions that can be answered. Unlocked questions or questions with stale locks. */
+    public function scopeCanAnswer($query)
+    {
+        $query
+            ->whereNull('answered_at')
+            ->where(function ($query) {
+                $query
+                    ->whereNull('last_fetched_by')
+                    ->orWhere(function ($subQuery) {
+                        $subQuery
+                            ->whereNull('last_fetched_at')
+                            ->orWhere('last_fetched_at', '<', Carbon::now()->subMinutes(5));
+                    });
+            });
     }
 
     /** Scope a query to only include answered questions. */
@@ -54,6 +85,8 @@ class GameQuestion extends Model
     {
         return $query->whereNotNull('answered_at');
     }
+
+    // ========== Relationships
 
     /** Game this entry belongs to */
     public function game()
@@ -71,5 +104,11 @@ class GameQuestion extends Model
     public function answeredBy()
     {
         return $this->belongsTo(User::class, 'answered_by_id');
+    }
+
+    /** User who locked this question */
+    public function lockedBy()
+    {
+        return $this->belongsTo(User::class, 'last_fetched_by');
     }
 }
