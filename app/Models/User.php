@@ -3,6 +3,8 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+
+use App\Enums\GameStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -51,8 +53,19 @@ class User extends Authenticatable
     public function scopeActiveGames($query)
     {
         return $query->whereHas('games', function ($query) {
-            $query->where('status', 'active');
+            $query->where('status', GameStatus::IN_PROGRESS);
         });
+    }
+
+    public function scopePlayersInGame($query, int|Game $gameId, bool $activeStatus = true)
+    {
+        $gameId = $gameId instanceof Game ? $gameId->id : $gameId;
+        $query
+            ->whereHas('games', function ($q) use ($gameId, $activeStatus) {
+                $q
+                    ->when($activeStatus, fn ($query) => $query->activeStatus())
+                    ->where((new Game)->getQualifiedKeyName(), $gameId);
+            });
     }
 
     /** Games this user is on (Pivot) */

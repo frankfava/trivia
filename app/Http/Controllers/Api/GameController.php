@@ -24,18 +24,7 @@ class GameController extends Controller
             ->with(['users'])
             ->when($request->query('is_owner'), fn ($query) => $query->ByOwner())
             ->when($request->query('is_player'), fn ($query) => $query->ByPlayer(include: true))
-            ->when(
-                value : $request->query('can_join'),
-                callback : function ($query) {
-                    $query
-                        ->where(function ($sq) {
-                            $sq
-                                ->ByStatus(GameStatus::PENDING)
-                                ->ByPlayer(include: false)
-                                ->WithPlayerLimitReached(include : false);
-                        });
-                }
-            )
+            ->when($request->query('can_join'), fn ($query) => $query->OpenToJoin())
             ->paginate(
                 perPage : $request->query('per_page', 10),
                 page : $request->query('page', 1)

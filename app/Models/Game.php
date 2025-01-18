@@ -24,6 +24,8 @@ class Game extends Model
         'meta' => 'json',
     ];
 
+    // ========== Scopes
+
     /** Scope to get games by status */
     public function scopeByStatus($query, GameStatus $status)
     {
@@ -31,31 +33,28 @@ class Game extends Model
     }
 
     /** Scope to get games by Owner */
-    public function scopeByOwner($query, null|int|User $owner = null, bool $include = true)
+    public function scopeByOwner($query, null|int|User $user = null, bool $include = true)
     {
-        $owner ??= (auth()->check() ? auth()->user() : null);
-        if ($owner instanceof User) {
-            $owner = $owner->id;
-        }
+        $user ??= (auth()->check() ? auth()->user() : null);
+        $userId = $user instanceof User ? $user->id : $user;
 
-        return $query->where('created_by_id', ($include ? '=' : '!='), $owner);
+        return $query->where('created_by_id', ($include ? '=' : '!='), $userId);
     }
 
     /** Scope to get games by Player */
-    public function scopeByPlayer($query, null|int|User $owner = null, bool $include = true)
+    public function scopeByPlayer($query, null|int|User $user = null, bool $include = true)
     {
-        $owner ??= (auth()->check() ? auth()->user() : null);
-        if ($owner instanceof User) {
-            $owner = $owner->id;
-        }
+        $user ??= (auth()->check() ? auth()->user() : null);
+        $userId = $user instanceof User ? $user->id : $user;
 
         return call_user_func(
             [$query, $include ? 'whereHas' : 'whereDoesntHave'],
             'users',
-            fn ($query) => $query->where('users.id', auth()->id())
+            fn ($query) => $query->where('users.id', $userId)
         );
     }
 
+    /** Scope to get games by Player Limit Reached */
     public function scopeWithPlayerLimitReached($query, bool $include = true)
     {
         return $query->whereRaw("
@@ -64,6 +63,17 @@ class Game extends Model
             (SELECT COUNT(*) FROM game_user WHERE game_user.game_id = games.id)
         ');
     }
+
+    /** Scope Games that are Open to Join */
+    public function scopeOpenToJoin($query)
+    {
+        return $query
+            ->ByStatus(GameStatus::PENDING)
+            ->ByPlayer(include: false)
+            ->WithPlayerLimitReached(include : false);
+    }
+
+    // ========== Relationships
 
     /** User that created this game */
     public function owner()
