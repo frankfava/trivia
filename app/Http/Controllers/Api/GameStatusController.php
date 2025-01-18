@@ -65,9 +65,6 @@ class GameStatusController extends Controller
         // Update the status to cancelled
         $game->update(['status' => 'cancelled']);
 
-        // @todo:  Get leaderboard cache
-        // Cache::forget("game_leaderboard_{$game->id}");
-
         return response()->json([
             'message' => 'Game status updated to cancelled.',
             'status' => $game->status,

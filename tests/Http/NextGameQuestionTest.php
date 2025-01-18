@@ -20,7 +20,7 @@ class NextGameQuestionTest extends TestCase
         $user = $this->makeUserAndAuthenticateWithToken();
 
         $game = Game::factory()
-            ->has(GameQuestion::factory()->unanswered(), 'gameQuestions')
+            ->has(GameQuestion::factory(), 'gameQuestions')
             ->create(['status' => GameStatus::IN_PROGRESS->value]);
 
         $game->users()->attach($user);
@@ -37,7 +37,7 @@ class NextGameQuestionTest extends TestCase
         $this->makeUserAndAuthenticateWithToken();
 
         $game = Game::factory()
-            ->has(GameQuestion::factory()->unanswered(), 'gameQuestions')
+            ->has(GameQuestion::factory(), 'gameQuestions')
             ->create(['status' => GameStatus::IN_PROGRESS->value]);
 
         $this->getJson(route('games.questions.next', [$game]))
@@ -50,7 +50,6 @@ class NextGameQuestionTest extends TestCase
         $user = $this->makeUserAndAuthenticateWithToken();
 
         $gameQuestion = GameQuestion::factory()
-            ->unanswered()
             ->for($game = Game::factory()->create([
                 'status' => GameStatus::IN_PROGRESS->value,
             ]))
@@ -70,7 +69,6 @@ class NextGameQuestionTest extends TestCase
         $user = $this->makeUserAndAuthenticateWithToken();
 
         $gameQuestion = GameQuestion::factory()
-            ->unanswered()
             ->for($game = Game::factory()->create([
                 'status' => GameStatus::IN_PROGRESS->value,
             ]))
@@ -96,7 +94,7 @@ class NextGameQuestionTest extends TestCase
         $user = $this->makeUserAndAuthenticateWithToken();
 
         $game = Game::factory()
-            ->has(GameQuestion::factory()->unanswered(), 'gameQuestions')
+            ->has(GameQuestion::factory(), 'gameQuestions')
             ->create(['status' => GameStatus::PENDING->value]);
 
         $game->users()->attach($user);
@@ -140,7 +138,7 @@ class NextGameQuestionTest extends TestCase
         $user = $this->makeUserAndAuthenticateWithToken();
 
         $game = Game::factory()
-            ->has(GameQuestion::factory()->unanswered(), 'gameQuestions')
+            ->has(GameQuestion::factory(), 'gameQuestions')
             ->create(['status' => GameStatus::IN_PROGRESS->value]);
 
         $game->users()->attach($user);

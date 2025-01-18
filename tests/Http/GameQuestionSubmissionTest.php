@@ -21,7 +21,6 @@ class GameQuestionSubmissionTest extends TestCase
         $user = $this->makeUserAndAuthenticateWithToken();
 
         $gameQuestion = GameQuestion::factory()
-            ->unanswered()
             ->for($game = Game::factory()->create([
                 'status' => GameStatus::IN_PROGRESS->value,
                 'meta' => ['reveal_correct_answers' => true],
@@ -44,7 +43,6 @@ class GameQuestionSubmissionTest extends TestCase
         $user = $this->makeUserAndAuthenticateWithToken();
 
         $gameQuestion = GameQuestion::factory()
-            ->unanswered()
             ->for($game = Game::factory()->create(['status' => GameStatus::IN_PROGRESS->value]))
             ->for($question = Question::factory()->create())
             ->create();
@@ -64,7 +62,6 @@ class GameQuestionSubmissionTest extends TestCase
         $user = $this->makeUserAndAuthenticateWithToken();
 
         $gameQuestion = GameQuestion::factory()
-            ->unanswered()
             ->for($game = Game::factory()->create(['status' => GameStatus::IN_PROGRESS->value]))
             ->for($question = Question::factory()->create())
             ->create();
@@ -82,7 +79,6 @@ class GameQuestionSubmissionTest extends TestCase
         $user = $this->makeUserAndAuthenticateWithToken();
 
         $gameQuestion = GameQuestion::factory()
-            ->unanswered()
             ->for($game = Game::factory()->create(['status' => GameStatus::IN_PROGRESS->value]))
             ->for($question = Question::factory()->create())
             ->create();
@@ -102,7 +98,6 @@ class GameQuestionSubmissionTest extends TestCase
         $user = $this->makeUserAndAuthenticateWithToken();
 
         $gameQuestion = GameQuestion::factory()
-            ->unanswered()
             ->for($game = Game::factory()->create(['status' => GameStatus::IN_PROGRESS->value]))
             ->for($question = Question::factory()->create())
             ->create();
@@ -120,7 +115,6 @@ class GameQuestionSubmissionTest extends TestCase
         $user = $this->makeUserAndAuthenticateWithToken();
 
         $gameQuestion = GameQuestion::factory()
-            ->unanswered()
             ->for($game = Game::factory()->create(['status' => GameStatus::IN_PROGRESS->value]))
             ->for($question = Question::factory()->create(['correct_answer' => 'correct_answer']))
             ->create();

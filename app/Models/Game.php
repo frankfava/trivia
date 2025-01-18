@@ -5,6 +5,9 @@ namespace App\Models;
 use App\Enums\GameStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Query\Builder;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 
 class Game extends Model
 {
@@ -71,6 +74,68 @@ class Game extends Model
             ->ByStatus(GameStatus::PENDING)
             ->ByPlayer(include: false)
             ->WithPlayerLimitReached(include : false);
+    }
+
+    /** Query Player scores */
+    public static function PlayerScoresQuery(int $gameId, ?int $userId = null): Builder
+    {
+        $game = new Game;
+        $user = new User;
+        $gameUser = new GameUser;
+        $gameQuestion = new GameQuestion;
+
+        $query = DB::table($game->getTable())
+            ->addSelect(
+                (new User)->getQualifiedKeyName().' as user_id',
+                (new User)->qualifyColumn('name'),
+                DB::raw('COUNT(game_questions.id) as total_answered'),
+                DB::raw('SUM(CASE WHEN game_questions.is_correct THEN 1 ELSE 0 END) as score'),
+                DB::raw('SUM(CASE WHEN NOT game_questions.is_correct THEN 1 ELSE 0 END) as incorrect_answers'),
+                DB::raw('ROUND(IFNULL(SUM(CASE WHEN game_questions.is_correct THEN 1 ELSE 0 END) * 100.0 / COUNT(game_questions.id), 0),2) as correct_percentage'),
+            )
+            // Join Users Table
+            ->join($gameUser->getTable(), $game->getQualifiedKeyName(), '=', $gameUser->qualifyColumn('game_id'))
+            ->join($user->getTable(), $user->qualifyColumn('id'), '=', $gameUser->qualifyColumn('user_id'))
+            // Join Game Questions for answer breakdown
+            ->leftJoin(
+                $gameQuestion->getTable(),
+                function ($join) use ($gameQuestion, $user) {
+                    $join->on($gameQuestion->qualifyColumn('answered_by_id'), '=', $user->getQualifiedKeyName());
+                }
+            )
+            ->where($game->getQualifiedKeyName(), $gameId)
+            // Group by User for Aggregation
+            ->groupBy($user->qualifyColumn('id'), $user->qualifyColumn('name'))
+            ->orderByDesc('score')
+            ->orderByDesc('correct_percentage');
+
+        if ($userId) {
+            $query->where((new User)->getQualifiedKeyName(), $userId);
+        }
+
+        return $query;
+    }
+
+    /** Get Game questions (add answer if its specific to one user) */
+    public function getGameQuestionsWithAnswers(?int $userId = null, ?bool $showCorrectAnswers = null): Collection
+    {
+        $showCorrectAnswers ??= (bool) $userId;
+
+        return $this->gameQuestions()
+            ->with(['question'])
+            ->when(
+                value : $userId,
+                callback : fn ($query) => $query->where('answered_by_id', $userId)
+            )
+            ->get()
+            ->map(fn ($gameQuestion) => [
+                'question' => $gameQuestion->question->question,
+                'submitted_answer' => $gameQuestion->answer,
+                ...($userId && $showCorrectAnswers ? [
+                    'correct_answer' => $gameQuestion->question->correct_answer,
+                    'is_correct' => $gameQuestion->is_correct,
+                ] : []),
+            ]);
     }
 
     // ========== Relationships

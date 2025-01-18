@@ -25,30 +25,39 @@ class GameQuestionFactory extends Factory
         return [
             'game_id' => Game::factory(),
             'question_id' => Question::factory(),
-            'answer' => ($answer = $this->faker->optional()->words(2, true)),
-            'answered_by_id' => ((bool) $answer ? User::factory() : null),
+            'answer' => null,
+            'answered_by_id' => null,
+            'answered_at' => null,
             'is_correct' => null,
-            'answered_at' => (bool) $answer ? $this->faker->dateTime : null,
             'last_fetched_at' => null,
             'last_fetched_by' => null,
         ];
     }
 
-    public function unanswered(): static
+    public function answered(bool $correctly = true, ?User $user = null): static
     {
-        return $this->state(fn (array $attributes) => [
-            'answer' => null,
-            'answered_by_id' => null,
-            'answered_at' => null,
-        ]);
-    }
+        return $this->state(function (array $attributes) use ($correctly, $user) {
+            // Get Question
+            $questionAttr = $attributes['question_id'];
 
-    public function answered(): static
-    {
-        return $this->state(fn (array $attributes) => [
-            'answer' => $this->faker->words(2, true),
-            'answered_by_id' => User::factory(),
-            'answered_at' => $this->faker->dateTime,
-        ]);
+            /** @var Question */
+            $question = match (true) {
+                $questionAttr instanceof \Database\Factories\QuestionFactory => $questionAttr->create(),
+                $questionAttr instanceof Question => $questionAttr,
+                is_int($questionAttr) => Question::find($questionAttr)
+            };
+
+            $user ??= User::factory();
+
+            return [
+                'question_id' => $question,
+                'answer' => $correctly ? $question->correct_answer : $this->faker->words(2, true),
+                'answered_by_id' => $user,
+                'answered_at' => now(),
+                'is_correct' => $correctly,
+                'last_fetched_at' => now()->subMinutes(3),
+                'last_fetched_by' => $user,
+            ];
+        });
     }
 }
