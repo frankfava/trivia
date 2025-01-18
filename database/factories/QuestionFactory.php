@@ -28,8 +28,8 @@ class QuestionFactory extends Factory
             'category_id' => Category::factory(),
             'question' => $this->faker->sentence,
             'correct_answer' => $this->faker->word,
-            'incorrect_answers' => json_encode($this->faker->words(3)),
-            'content_hash' => substr($this->faker->sha256, 0, 12)
+            'incorrect_answers' => $this->faker->randomElements([$this->faker->word, $this->faker->word, $this->faker->word, $this->faker->word], rand(2, 4)),
+            'content_hash' => substr($this->faker->sha256, 0, 12),
         ];
     }
 }

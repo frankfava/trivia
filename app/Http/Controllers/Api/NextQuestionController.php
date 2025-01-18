@@ -2,20 +2,41 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Enums\GameStatus;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\NextQuestionResource;
 use App\Models\Game;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class NextQuestionController extends Controller
 {
+    /** Fetch the next unanswered question. */
     public function show(Request $request, Game $game)
     {
+        // Ensure user is in the game
         $this->authorize('view', $game);
 
-        // Fetch the next unanswered question.
-        // Check if the user is part of the game.
-        // Fetch the next unlocked question for the game.
-        // Lock the question (locked_by, locked_at) to the user.
-        // Handle stale locks.
+        // Ensure game is in progress
+        if ($game->status !== GameStatus::IN_PROGRESS) {
+            throw new AuthorizationException('Game is not in progress.');
+        }
+
+        // Find the next question that is not answered
+        $gameQuestion = $game->gameQuestions()
+            ->CanAnswer()
+            ->inRandomOrder()
+            ->with(['question' => fn ($r) => $r->with('category')])
+            ->first();
+
+        if (! $gameQuestion) {
+            throw new NotFoundHttpException('No more questions available.');
+        }
+
+        // Lock the question
+        $gameQuestion->lockForUser($request->user());
+
+        return NextQuestionResource::create($gameQuestion);
     }
 }

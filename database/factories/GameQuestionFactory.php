@@ -25,12 +25,30 @@ class GameQuestionFactory extends Factory
         return [
             'game_id' => Game::factory(),
             'question_id' => Question::factory(),
-            'answered_by_id' => User::factory(),
-            'answer' => $this->faker->words(2, true), // Answered or not
+            'answer' => ($answer = $this->faker->optional()->words(2, true)),
+            'answered_by_id' => ((bool) $answer ? User::factory() : null),
             'is_correct' => null,
-            'answered_at' => $this->faker->optional()->dateTime,
+            'answered_at' => (bool) $answer ? $this->faker->dateTime : null,
             'last_fetched_at' => null,
             'last_fetched_by' => null,
         ];
+    }
+
+    public function unanswered(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'answer' => null,
+            'answered_by_id' => null,
+            'answered_at' => null,
+        ]);
+    }
+
+    public function answered(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'answer' => $this->faker->words(2, true),
+            'answered_by_id' => User::factory(),
+            'answered_at' => $this->faker->dateTime,
+        ]);
     }
 }

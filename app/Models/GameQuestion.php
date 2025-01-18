@@ -19,6 +19,7 @@ class GameQuestion extends Model
         'is_correct',
         'answered_at',
         'last_fetched_at',
+        'last_fetched_by',
     ];
 
     protected $casts = [
@@ -35,7 +36,7 @@ class GameQuestion extends Model
     /** Determine if the question can be answers */
     public function canAnswerQuestion(): bool
     {
-        return ! $this->last_fetched_by && $this->isStaleLocked();
+        return ! $this->last_fetched_by || $this->isStaleLocked();
     }
 
     /** Determine if the question is stale-locked. */
@@ -45,21 +46,21 @@ class GameQuestion extends Model
     }
 
     /** Mark a question as locked by a user.  */
-    public function lockForUser(null|int|User $user): bool
+    public function lockForUser(null|int|User $user, ?Carbon $datetime = null): static
     {
         $user ??= (auth()->check() ? auth()->user() : null);
-        $userId = $user instanceof Game ? $user->id : $user;
+        $userId = $user instanceof User ? $user->id : $user;
 
         if (! $this->canAnswerQuestion()) {
             return false;
         }
 
         $this->update([
-            'last_fetched_at' => Carbon::now(),
+            'last_fetched_at' => $datetime ??= Carbon::now(),
             'last_fetched_by' => $userId,
         ]);
 
-        return true;
+        return $this;
     }
 
     // ========== Scopes
