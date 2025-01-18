@@ -58,7 +58,7 @@ class GamesTest extends TestCase
             'page' => 1,
         ]));
 
-        $response->assertStatus(200)
+        $response->assertOk()
             ->assertJsonCount(2, 'data')
             ->assertJsonFragment(['created_by_id' => $owner->id]);
     }
@@ -87,7 +87,7 @@ class GamesTest extends TestCase
             'page' => 1,
         ]));
 
-        $response->assertStatus(200)
+        $response->assertOk()
             ->assertJsonCount(2, 'data')
             ->assertJsonFragment(['id' => $validGames->first()->id]);
     }
@@ -126,7 +126,7 @@ class GamesTest extends TestCase
             'page' => 1,
         ]));
 
-        $response->assertStatus(200)
+        $response->assertOk()
             ->assertJsonCount(1, 'data')
             ->assertJsonFragment(['status' => GameStatus::PENDING->value]);
     }
@@ -143,7 +143,7 @@ class GamesTest extends TestCase
             ->create();
 
         $this->getJson(route('games.show', [$game]))
-            ->assertStatus(200)
+            ->assertOk()
             ->assertJsonFragment(['id' => $game->id]);
     }
 
@@ -159,7 +159,7 @@ class GamesTest extends TestCase
 
         $response = $this->getJson(route('games.show', $game));
 
-        $response->assertStatus(200)
+        $response->assertOk()
             ->assertJsonFragment(['id' => $game->id]);
     }
 
@@ -172,7 +172,7 @@ class GamesTest extends TestCase
 
         $response = $this->getJson(route('games.show', $game));
 
-        $response->assertStatus(403);
+        $response->assertForbidden();
     }
 
     #[Test]
@@ -193,7 +193,7 @@ class GamesTest extends TestCase
     {
         $this->makeUserAndAuthenticateWithToken();
 
-        $response = $this->postJson(route('games.store'), ['label' => ''])->assertStatus(422);
+        $response = $this->postJson(route('games.store'), ['label' => ''])->assertUnprocessable();
 
         $response->assertJsonValidationErrors([
             'label',
@@ -278,7 +278,7 @@ class GamesTest extends TestCase
 
         $response = $this->deleteJson(route('games.destroy', $game));
 
-        $response->assertStatus(403);
+        $response->assertForbidden();
         $this->assertDatabaseHas('games', ['id' => $game->id]);
     }
 
@@ -308,7 +308,7 @@ class GamesTest extends TestCase
             ->create(['status' => GameStatus::PENDING]);
 
         $response = $this->deleteJson(route('games.destroy', $game))
-            ->assertStatus(422);
+            ->assertUnprocessable();
 
         $this->assertDatabaseHas('games', ['id' => $game->id]);
     }

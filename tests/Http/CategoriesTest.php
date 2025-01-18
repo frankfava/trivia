@@ -30,7 +30,7 @@ class CategoriesTest extends TestCase
         ]));
 
         $res
-            ->assertStatus(200)
+            ->assertOk()
             ->assertJsonCount(2, 'data');
     }
 
@@ -49,7 +49,7 @@ class CategoriesTest extends TestCase
         $category = Category::factory()->create();
 
         $this->getJson(route('categories.show', [$category]))
-            ->assertStatus(200)
+            ->assertOk()
             ->assertJsonFragment($category->toArray());
     }
 
@@ -76,7 +76,7 @@ class CategoriesTest extends TestCase
             ->create();
 
         $this->deleteJson(route('categories.destroy', [$category]))
-            ->assertStatus(403);
+            ->assertForbidden();
 
         $this->assertCount(1, Category::all());
     }
