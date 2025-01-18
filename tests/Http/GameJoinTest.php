@@ -31,7 +31,7 @@ class GameJoinTest extends TestCase
     }
 
     #[Test]
-    public function a_user_cannot_join_a_game_thats_not_pending_or_in_progress()
+    public function a_user_cannot_join_a_game_thats_not_pending()
     {
         $user = $this->makeUserAndAuthenticateWithToken();
 

@@ -30,10 +30,39 @@ class Game extends Model
         return $query->where('status', $status->value);
     }
 
-    /** Scope to get active games only */
-    public function scopeActive($query)
+    /** Scope to get games by Owner */
+    public function scopeByOwner($query, null|int|User $owner = null, bool $include = true)
     {
-        return $query->where('status', GameStatus::IN_PROGRESS);
+        $owner ??= (auth()->check() ? auth()->user() : null);
+        if ($owner instanceof User) {
+            $owner = $owner->id;
+        }
+
+        return $query->where('created_by_id', ($include ? '=' : '!='), $owner);
+    }
+
+    /** Scope to get games by Player */
+    public function scopeByPlayer($query, null|int|User $owner = null, bool $include = true)
+    {
+        $owner ??= (auth()->check() ? auth()->user() : null);
+        if ($owner instanceof User) {
+            $owner = $owner->id;
+        }
+
+        return call_user_func(
+            [$query, $include ? 'whereHas' : 'whereDoesntHave'],
+            'users',
+            fn ($query) => $query->where('users.id', auth()->id())
+        );
+    }
+
+    public function scopeWithPlayerLimitReached($query, bool $include = true)
+    {
+        return $query->whereRaw("
+            JSON_EXTRACT(meta, '$.max_players') IS NOT NULL
+            AND CAST(JSON_EXTRACT(meta, '$.max_players') AS INTEGER) ".($include ? '<=' : '>').'
+            (SELECT COUNT(*) FROM game_user WHERE game_user.game_id = games.id)
+        ');
     }
 
     /** User that created this game */

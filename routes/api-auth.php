@@ -9,7 +9,7 @@ Route::get('/ping', fn () => 'pong')->name('ping');
 Route::get('/user', fn (Request $request) => $request->user())->name('user');
 
 // Manage Games
-Route::apiResource('games', Api\GameController::class)->names('games');
+Route::apiResource('games', Api\GameController::class)->names('games')->except('update');
 
 // Start a Game
 Route::match(['put', 'patch'], 'games/{game}/start', [Api\GameStatusController::class, 'start'])->name('games.start');

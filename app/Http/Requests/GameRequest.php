@@ -11,7 +11,21 @@ class GameRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
+    }
+
+    /**
+     * Prepare the data for validation.
+     *
+     * @return void
+     */
+    protected function prepareForValidation()
+    {
+        $this->merge([
+            'number_of_questions' => $this->number_of_questions ?? 20,
+            'max_players' => $this->max_players ?? 5,
+            'show_correct_answers' => $this->show_correct_answers ?? false,
+        ]);
     }
 
     /**
@@ -22,7 +36,30 @@ class GameRequest extends FormRequest
     public function rules(): array
     {
         return [
-            // max_players, etc
+            'label' => [
+                'sometimes',
+                'required_without:id',
+                'string',
+                'max:255',
+            ],
+            'number_of_questions' => [
+                'sometimes',
+                'integer',
+                'nullable',
+                'min:1',
+                'max:50',
+            ],
+            'max_players' => [
+                'sometimes',
+                'integer',
+                'nullable',
+                'min:1',
+                'max:50',
+            ],
+            'show_correct_answers' => [
+                'sometimes',
+                'boolean',
+            ],
         ];
     }
 }
