@@ -18,8 +18,6 @@ class GameQuestionSubmissionTest extends TestCase
     #[Test]
     public function can_submit_question_answer_in_a_game()
     {
-        $this->withoutExceptionHandling();
-
         $user = $this->makeUserAndAuthenticateWithToken();
 
         $gameQuestion = GameQuestion::factory()

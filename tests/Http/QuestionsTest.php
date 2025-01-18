@@ -17,8 +17,6 @@ class QuestionsTest extends TestCase
     #[Test]
     public function a_new_question_can_be_created_by_anyone()
     {
-        $this->withoutExceptionHandling();
-
         $user = $this->makeUserAndAuthenticateWithToken();
 
         $data = [

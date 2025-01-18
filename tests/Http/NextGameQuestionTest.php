@@ -49,12 +49,14 @@ class NextGameQuestionTest extends TestCase
     {
         $user = $this->makeUserAndAuthenticateWithToken();
 
-        $game = Game::factory()
-            ->create(['status' => GameStatus::IN_PROGRESS->value]);
+        $gameQuestion = GameQuestion::factory()
+            ->unanswered()
+            ->for($game = Game::factory()->create([
+                'status' => GameStatus::IN_PROGRESS->value,
+            ]))
+            ->create();
 
         $game->users()->attach($user);
-
-        $gameQuestion = GameQuestion::factory()->unanswered()->create();
 
         $game->gameQuestions()->save($gameQuestion->lockForUser(User::factory()->create()));
 
@@ -67,12 +69,14 @@ class NextGameQuestionTest extends TestCase
     {
         $user = $this->makeUserAndAuthenticateWithToken();
 
-        $game = Game::factory()
-            ->create(['status' => GameStatus::IN_PROGRESS->value]);
+        $gameQuestion = GameQuestion::factory()
+            ->unanswered()
+            ->for($game = Game::factory()->create([
+                'status' => GameStatus::IN_PROGRESS->value,
+            ]))
+            ->create();
 
         $game->users()->attach($user);
-
-        $gameQuestion = GameQuestion::factory()->unanswered()->create();
 
         $game->gameQuestions()->save(
             $gameQuestion->lockForUser(

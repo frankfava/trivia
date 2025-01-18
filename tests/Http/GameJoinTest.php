@@ -16,8 +16,6 @@ class GameJoinTest extends TestCase
     #[Test]
     public function a_user_can_join_a_pending_or_in_progress_game()
     {
-        $this->withoutExceptionHandling();
-
         $user = $this->makeUserAndAuthenticateWithToken();
 
         $game = Game::factory()

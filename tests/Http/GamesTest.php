@@ -134,8 +134,6 @@ class GamesTest extends TestCase
     #[Test]
     public function you_can_view_a_single_game_if_owner()
     {
-        $this->withoutExceptionHandling();
-
         $user = $this->makeUserAndAuthenticateWithToken();
 
         $game = Game::factory()
@@ -233,8 +231,6 @@ class GamesTest extends TestCase
     #[Test]
     public function a_new_game_is_assigned_questions()
     {
-        $this->withoutExceptionHandling();
-
         $this->makeUserAndAuthenticateWithToken();
 
         Question::factory(2)->create();
