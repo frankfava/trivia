@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Enums\GameStatus;
+use App\Events\GameCompleted;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -32,6 +34,31 @@ class GameQuestion extends Model
         'last_fetched_at' => 'datetime',
         'last_fetched_by' => 'integer',
     ];
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        // Check if all questions are answered for this game
+        static::updated(function (self $gameQuestion) {
+            $game = Game::find($gameQuestion->game_id);
+
+            if ($game->status !== GameStatus::IN_PROGRESS) {
+                return;
+            }
+
+            // Is there any unanswered question for this game?
+            $unansweredCount = self::where('game_id', $game)
+                ->whereNull('answered_by_id')
+                ->count();
+
+            if ($unansweredCount === 0) {
+                $game->update(['status' => GameStatus::COMPLETED]);
+                // Dispatch GameCompleted event
+                GameCompleted::dispatch($game);
+            }
+        });
+    }
 
     /** Determine if the question can be answers */
     public function canAnswerQuestion(): bool
