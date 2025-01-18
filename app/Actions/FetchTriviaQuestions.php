@@ -13,6 +13,7 @@ class FetchTriviaQuestions
     const API_URL = 'https://opentdb.com/api.php?';
 
     protected ?Closure $afterEachTry;
+
     protected ?Closure $onCompletion;
 
     public function __construct(
@@ -45,7 +46,7 @@ class FetchTriviaQuestions
 
             $questions = $json['results'] ?? [];
 
-            if (!empty($questions)) {
+            if (! empty($questions)) {
                 foreach ($questions as $question) {
                     if ($fetchedQuestions >= $this->totalQuestions) {
                         break;
@@ -75,7 +76,7 @@ class FetchTriviaQuestions
         // Check if question already exists based on the content hash
         $existingQuestion = Question::where('content_hash', $contentHash)->exists();
 
-        if (!$existingQuestion) {
+        if (! $existingQuestion) {
             Question::forceCreate([
                 'type' => $questionData['type'],
                 'question' => $questionData['question'],

@@ -3,8 +3,8 @@
 namespace App\Console\Commands;
 
 use App\Actions\FetchTriviaQuestions;
-use Illuminate\Console\Command;
 use Exception;
+use Illuminate\Console\Command;
 
 class FetchTriviaQuestionsCommand extends Command
 {
@@ -39,14 +39,14 @@ class FetchTriviaQuestionsCommand extends Command
                 afterEachTry: function ($aggregateCount, $fetchedCount) {
                     $this->line("Fetched $fetchedCount questions. Total: $aggregateCount");
                 },
-                onCompletion: fn($fetchedCount) => $this->info("Fetched $fetchedCount questions.")
+                onCompletion: fn ($fetchedCount) => $this->info("Fetched $fetchedCount questions.")
             );
 
             $fetchedCount = $fetchTriviaQuestionsAction->execute();
 
-            $this->info("Successfully fetched trivia questions.");
+            $this->info('Successfully fetched trivia questions.');
         } catch (Exception $e) {
-            $this->error('Error: ' . $e->getMessage());
+            $this->error('Error: '.$e->getMessage());
         }
     }
 }

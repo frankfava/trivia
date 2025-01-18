@@ -2,12 +2,12 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
-use App\Models\User;
-use App\Models\Game;
 use App\Models\Category;
-use App\Models\Question;
+use App\Models\Game;
 use App\Models\GameQuestion;
+use App\Models\Question;
+use App\Models\User;
+use Illuminate\Database\Seeder;
 
 class ResourceSeeder extends Seeder
 {
@@ -22,7 +22,6 @@ class ResourceSeeder extends Seeder
 
         // Create Categories
         $categories = Category::factory()->count(5)->create();
-
 
         // Create Questions for Each Category
         $categories->each(function ($category) {
